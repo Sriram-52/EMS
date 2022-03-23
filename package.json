@@ -8,8 +8,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "axios": "^0.26.1",
+    "chart.js": "^3.7.1",
+    "firebase": "^7.24.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-icons": "^3.11.0",
+    "react-idle-timer": "^4.5.0",
+    "react-image-crop": "^8.6.5",
+    "react-number-format": "^4.4.1",
+    "redux": "^4.1.2",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.4.1",
+    "suneditor-react": "^3.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.7",
