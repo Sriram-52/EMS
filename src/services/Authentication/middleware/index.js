@@ -13,8 +13,8 @@ export const tokenListner = (dispatch) => {
 				.then((idToken) => {
 					console.log(idToken)
 					axios.defaults.headers.common['Authorization'] = `Bearer ${idToken}`
-					axios.defaults.baseURL = process.env.REACT_APP_BASE_URL
-					return dispatch(dispatcher(ACTIONS.SIGN_IN_SUCCESS, user))
+					axios.defaults.baseURL = import.meta.env.VITE_APP_BASE_URL
+					return dispatch(dispatcher(ACTIONS.SIGN_IN_SUCCESS, { user }))
 				})
 				.catch((err) => {
 					console.error(err)
@@ -43,8 +43,8 @@ export const signIn =
 			.then((idToken) => {
 				console.log(idToken)
 				axios.defaults.headers.common['Authorization'] = `Bearer ${idToken}`
-				axios.defaults.baseURL = process.env.REACT_APP_BASE_URL
-				return dispatch(dispatcher(ACTIONS.SIGN_IN_SUCCESS, user))
+				axios.defaults.baseURL = import.meta.env.VITE_APP_BASE_URL
+				return dispatch(dispatcher(ACTIONS.SIGN_IN_SUCCESS, { user }))
 			})
 			.catch((err) => {
 				console.error(err)
@@ -71,7 +71,9 @@ export const signOut = () => (dispatch) => {
 export const forgotPassword = (email) => (dispatch) => {
 	dispatch(dispatcher(ACTIONS.FORGOT_PASSWORD_REQ))
 	return HttpService.postRequest({
-		url: `${process.env.REACT_APP_BASE_URL}/auth/forgotpassword?email=${email}`,
+		url: `${
+			import.meta.env.VITE_APP_BASE_URL
+		}/auth/forgotpassword?email=${email}`,
 		body: {},
 	})
 		.then((res) => {
