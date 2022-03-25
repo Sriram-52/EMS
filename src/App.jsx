@@ -4,7 +4,7 @@ import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom'
 import './App.css'
 import { tokenListner } from './services/Authentication/middleware'
 import CustomBackDrop from './utils/components/customBackdrop'
-import NavBar from './utils/components/navBar'
+import Drawer from './services/Dashboard/components/Drawer'
 import { unProtectedRoutes } from './routes'
 
 function App() {
@@ -31,7 +31,7 @@ function App() {
 	} else {
 		return (
 			<BrowserRouter>
-				<NavBar />
+				<Drawer />
 			</BrowserRouter>
 		)
 	}
