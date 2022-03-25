@@ -2,7 +2,7 @@ const initialState = {}
 
 export default (state = initialState, { type, payload }) => {
 	switch (type) {
-		case first:
+		case 'first':
 			return { ...state, ...payload }
 
 		default:
