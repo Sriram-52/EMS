@@ -1,11 +1,6 @@
-const initialState = {}
+import { combineReducers } from 'redux'
+import projectReducer from './projects'
 
-export default (state = initialState, { type, payload }) => {
-	switch (type) {
-		case first:
-			return { ...state, ...payload }
-
-		default:
-			return state
-	}
-}
+export default combineReducers({
+	projects: projectReducer,
+})
