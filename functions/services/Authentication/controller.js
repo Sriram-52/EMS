@@ -6,24 +6,6 @@ const { closedEnd } = require('../../endpoints')
 router.post('/createemployee', (req, res) => {
 	let inputs = req.body
 	const authObj = new Authentication(req.user)
-	let employeeInfo = inputs.employeeInfo
-	let noVal = 0
-	const checkKeyValues = () => {
-		Object.entries(employeeInfo['employmenthistory'][0]).forEach(
-			([key, value]) => {
-				if (value === '') noVal++
-			}
-		)
-		if (noVal === Object.keys(employeeInfo['employmenthistory'][0]).length)
-			return true
-		return false
-	}
-	if (
-		Object.keys(employeeInfo['employmenthistory'][0]).length === 0 ||
-		checkKeyValues()
-	)
-		employeeInfo['employmenthistory'] = []
-	inputs.employeeInfo = employeeInfo
 	return authObj
 		._create_employee(inputs)
 		.then(({ emailId, customID }) => {

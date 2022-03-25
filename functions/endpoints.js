@@ -19,9 +19,9 @@ const closedEnd = (req, res, next) => {
 		.then((doc) => {
 			const userData = doc.data()
 			const name = [
-				userData.personal.firstname,
-				userData.personal.middlename,
-				userData.personal.lastname,
+				userData.personalDetails.firstName,
+				userData.personalDetails.middleName,
+				userData.personalDetails.lastName,
 			]
 				.filter((t) => t !== '')
 				.join(' ')

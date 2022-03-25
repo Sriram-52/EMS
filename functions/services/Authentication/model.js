@@ -121,141 +121,123 @@ class Authentication {
 			const batch = db.batch()
 			const FieldValue = admin.firestore.FieldValue
 
-			return AuthenticationUTILS._check_token_expiry(token)
-				.then((email) => {
-					emailId = email
-					return AuthenticationUTILS._check_employee_registered_or_not(emailId)
-				})
-				.catch((err) => {
-					if (err.code === 'auth/user-not-found') {
-						// User doesn't exist yet, create it...
-						tokenRef = db.collection('INVITATIONS').doc(emailId)
-						return companyRef.get()
-					}
-					throw err
-				})
-				.then((doc) => {
-					companyInfo = doc.data()
-					prefix = doc.data().companyID.prefix
-					return idRef.get()
-				})
-				.then((doc) => {
-					if (!doc.exists) {
-						currID = 1
-						return idRef.set({
-							companyID: 2,
-							active: FieldValue.increment(1),
-							inactive: 0,
-							suspended: 0,
-						})
-					}
-					currID = doc.data().companyID
-					return idRef.update({
-						companyID: FieldValue.increment(1),
-						active: FieldValue.increment(1),
-						inactive: FieldValue.increment(-1),
+			return (
+				AuthenticationUTILS._check_token_expiry(token)
+					.then((email) => {
+						emailId = email
+						return AuthenticationUTILS._check_employee_registered_or_not(
+							emailId
+						)
 					})
-				})
-				.then(() => {
-					customID =
-						prefix +
-						'0'.repeat(6 - currID.toString().length) +
-						currID.toString()
-					return admin.auth().createUser({
-						uid: customID,
-						email: emailId,
-						password: inputs.password,
-						displayName: customID,
+					.catch((err) => {
+						if (err.code === 'auth/user-not-found') {
+							// User doesn't exist yet, create it...
+							tokenRef = db.collection('INVITATIONS').doc(emailId)
+							return companyRef.get()
+						}
+						throw err
 					})
-				})
-				.then((user) => {
-					userInfo = user
-					return admin.auth().setCustomUserClaims(user.uid, {
-						role: 'user',
+					.then((doc) => {
+						// companyInfo = doc.data()
+						// prefix = doc.data().companyID.prefix
+						prefix = 'EMS'
+						return idRef.get()
 					})
-				})
-				.then(() => {
-					userRef = db.collection('EMPLOYEES').doc(customID)
-					const registeredAt = new Date().toISOString()
-					// setting employee collection
-					batch.set(userRef, {
-						...employeeInfo,
-						uid: userInfo.uid,
-						employeeID: customID,
-						email: emailId,
-						status: 'active',
-						role: 'user',
-						isDisabled: false,
-						isExist: true,
-						registeredAt: registeredAt,
-					})
-
-					batch.delete(db.collection('EMPLOYEES').doc(emailId))
-					// setting up basic modules
-					const modules = {
-						accessibles: [
-							'wiki',
-							'task-management',
-							'employee-self-services',
-							'discussions',
-						],
-						uid: customID,
-					}
-					moduleRef = db
-						.collection('EMPLOYEES')
-						.doc(customID)
-						.collection('MODULE_LEVEL_ACCESS')
-						.doc('modules')
-					batch.set(moduleRef, modules)
-					payrollRef = db.collection('PAYROLLS').doc(customID)
-					const payrollSettings = AuthenticationUTILS.defaultPayrollSettings()
-					batch.set(payrollRef, {
-						...payrollSettings,
-						isExist: true,
-						employeeID: customID,
-					})
-
-					// changing status to registered
-					batch.update(tokenRef, {
-						registeredInfo: {
-							isRegistered: true,
+					.then((doc) => {
+						if (!doc.exists) {
+							currID = 1
+						}
+						currID = doc.data().companyID
+						customID =
+							prefix +
+							'0'.repeat(6 - currID.toString().length) +
+							currID.toString()
+						userRef = db.collection('EMPLOYEES').doc(customID)
+						const registeredAt = new Date().toISOString()
+						// setting employee collection
+						batch.set(userRef, {
+							...employeeInfo,
+							uid: customID,
+							employeeID: customID,
+							email: emailId,
+							status: 'active',
+							role: 'user',
+							isDisabled: false,
+							isExist: true,
 							registeredAt: registeredAt,
-						},
+						})
+
+						batch.delete(db.collection('EMPLOYEES').doc(emailId))
+						// setting up basic modules
+						const modules = {
+							accessibles: [
+								'wiki',
+								'task-management',
+								'employee-self-services',
+								'discussions',
+							],
+							uid: customID,
+						}
+						moduleRef = db
+							.collection('EMPLOYEES')
+							.doc(customID)
+							.collection('MODULE_LEVEL_ACCESS')
+							.doc('modules')
+						batch.set(moduleRef, modules)
+						payrollRef = db.collection('PAYROLLS').doc(customID)
+						const payrollSettings = AuthenticationUTILS.defaultPayrollSettings()
+						batch.set(payrollRef, {
+							...payrollSettings,
+							isExist: true,
+							employeeID: customID,
+						})
+
+						// changing status to registered
+						batch.update(tokenRef, {
+							registeredInfo: {
+								isRegistered: true,
+								registeredAt: registeredAt,
+							},
+						})
+						return batch.commit()
 					})
-
-					const { firstname, middlename, lastname, gender, department } =
-						employeeInfo.personal
-					const formattedName = [firstname, middlename, lastname]
-						.filter((item) => item !== '')
-						.join(' ')
-					const metaDoc = {
-						uid: userInfo.uid,
-						name: formattedName,
-						email: emailId,
-						photoURL: employeeInfo.imageURL,
-						isSupervisor: false,
-						designation: 'user',
-						jobtitle: '',
-						status: 'active',
-						companyID: customID,
-						gender: gender,
-						department: department,
-						category: '',
-					}
-
-					batch.set(
-						metaRef,
-						{
-							[customID]: metaDoc,
-						},
-						{ merge: true }
-					)
-					return batch.commit()
-				})
-				.then(() => resolve({ emailId, customID }))
-				.catch((err) => {
-					return reject(err)
-				})
+					.then(() => {
+						// waiting for the firestore to update all the data and then creating the user
+						return admin.auth().createUser({
+							uid: customID,
+							email: emailId,
+							password: inputs.password,
+							displayName: customID,
+						})
+					})
+					// setting the custom claim role as user
+					.then((user) => {
+						return admin.auth().setCustomUserClaims(user.uid, {
+							role: 'user',
+						})
+					})
+					.then(() => {
+						// for tracking the employee Id
+						if (currID === 1) {
+							// when there are no employees the currId will be 1 so setting the document with default data
+							return idRef.set({
+								companyID: 2,
+								active: FieldValue.increment(1),
+								inactive: 0,
+								suspended: 0,
+							})
+						}
+						return idRef.update({
+							companyID: FieldValue.increment(1),
+							active: FieldValue.increment(1),
+							inactive: FieldValue.increment(-1),
+						})
+					})
+					.then(() => resolve({ emailId, customID }))
+					.catch((err) => {
+						return reject(err)
+					})
+			)
 		})
 	}
 
@@ -307,21 +289,12 @@ class Authentication {
 
 	async _invite_employee(inputs) {
 		console.log('_invite_employee')
-		const employeeEmail = inputs.employeeEmail.toLowerCase()
-		const { branch, dob, firstname, lastname, phonenumber } =
-			inputs.employeeInfo
+		const employeeEmail = inputs.email.toLowerCase()
 		const basicInfo = {
 			email: employeeEmail,
-			personal: {
-				branch,
-				dob,
-				firstname,
-				lastname,
-				phonenumber,
-			},
+			personalDetails: inputs.personal,
 		}
 
-		// const formattedName = [firstname, lastname].filter(item => item !== "").join(" ")
 		const tokenRef = db.collection('INVITATIONS').doc(employeeEmail)
 
 		let isTokenInv = await tokenRef.get().exists
@@ -330,89 +303,90 @@ class Authentication {
 		const idRef = db.collection('ID_TRACKER').doc('employees')
 		const batch = db.batch()
 		let newToken
-		return AuthenticationUTILS._check_employee_registered_or_not(employeeEmail)
-			.catch((err) => {
-				if (err.code === 'auth/user-not-found') {
-					// User doesn't exist yet, create it...
-
-					return db.collection('EMPLOYEES').doc(employeeEmail).get()
-				}
-				throw err
-			})
-			.then((doc) => {
-				console.log(`INVITING ${employeeEmail}...`)
-				let data
-				newToken = JWT.generateToken(employeeEmail)
-				const newInvitation = {
-					token: newToken,
-					invitedBy: this.actionPerformer.uid,
-					invitedAt: new Date().toISOString(),
-				}
-				if (doc.exists && isTokenInv) {
-					console.log('Previous Invitations exists')
-					data = doc.data()
-					// the below condition will occur when a deleted inactive employee,
-					// if re invited then the inactive count should be increase
-					if (!data.isExist)
-						batch.update(idRef, {
-							inactive: admin.firestore.FieldValue.increment(1),
-						})
-					batch.update(tokenRef, {
-						invitations: admin.firestore.FieldValue.arrayUnion(newInvitation),
-						latestToken: newToken,
-					})
-					batch.update(userRef, {
-						personal: basicInfo.personal,
-						isExist: true,
-					})
-				} else {
-					console.log('No Previous Invitations exists')
-					data = {
-						invitations: [],
-						latestToken: '',
-						invitee: '',
-						registeredInfo: {
-							isRegistered: false,
-							registeredAt: '',
-						},
+		return (
+			AuthenticationUTILS._check_employee_registered_or_not(employeeEmail)
+				.catch((err) => {
+					if (err.code === 'auth/user-not-found') {
+						// User doesn't exist yet, create it...
+						return db.collection('EMPLOYEES').doc(employeeEmail).get()
 					}
-					data.invitations = [newInvitation]
-					data.invitee = employeeEmail
-					data.latestToken = newToken
-					batch.set(tokenRef, data)
-					batch.set(userRef, {
-						...basicInfo,
-						isExist: true,
-						status: 'inactive',
-					})
-					const FieldValue = admin.firestore.FieldValue
-					batch.update(idRef, {
-						inactive: FieldValue.increment(1),
-					})
-				}
-				return batch.commit()
-			})
-			.then(() => {
-				return db.collection('COMPANY_CONFIG').doc('details').get()
-			})
-			.then((doc) => {
-				const details = doc.data()
-				const web_url = details.web_url
-				const invitor = this.actionPerformer.name
-				const subject = `INVITATION TO REGISTER IN ${details.companyName.toUpperCase()}`
-				const body = `<div>
-                        ${invitor} is inviting you to register in <b>${details.companyName}</b>. Click on the below link to register:
-                        <a href='${web_url}/invitations/${newToken}' >
-                        <button name="button" style="background:#3630a3;color:white; cursor:pointer">Click here to register</button>
-                        </a>
-                        
-                    </div>`
-				emailSender.openMail(employeeEmail, subject, body)
-				return employeeEmail
-			})
-			.catch((err) => {
-				throw err
-			})
+					throw err
+				})
+				.then((doc) => {
+					console.log(`INVITING ${employeeEmail}...`)
+					let data
+					newToken = JWT.generateToken(employeeEmail)
+					const newInvitation = {
+						token: newToken,
+						invitedBy: this.actionPerformer.uid,
+						invitedAt: new Date().toISOString(),
+					}
+					if (doc.exists && isTokenInv) {
+						console.log('Previous Invitations exists')
+						data = doc.data()
+						// the below condition will occur when a deleted inactive employee,
+						// if re invited then the inactive count should be increase
+						if (!data.isExist)
+							batch.update(idRef, {
+								inactive: admin.firestore.FieldValue.increment(1),
+							})
+						batch.update(tokenRef, {
+							invitations: admin.firestore.FieldValue.arrayUnion(newInvitation),
+							latestToken: newToken,
+						})
+						batch.update(userRef, {
+							personal: basicInfo.personal,
+							isExist: true,
+						})
+					} else {
+						console.log('No Previous Invitations exists')
+						data = {
+							invitations: [],
+							latestToken: '',
+							invitee: '',
+							registeredInfo: {
+								isRegistered: false,
+								registeredAt: '',
+							},
+						}
+						data.invitations = [newInvitation]
+						data.invitee = employeeEmail
+						data.latestToken = newToken
+						batch.set(tokenRef, data)
+						batch.set(userRef, {
+							...basicInfo,
+							isExist: true,
+							status: 'inActive',
+						})
+						const FieldValue = admin.firestore.FieldValue
+						batch.update(idRef, {
+							inactive: FieldValue.increment(1),
+						})
+					}
+					return batch.commit()
+				})
+				// .then(() => {
+				// 	return db.collection('COMPANY_CONFIG').doc('details').get()
+				// })
+				// .then((doc) => {
+				// 	const details = doc.data()
+				// 	const web_url = details.web_url
+				// 	const invitor = this.actionPerformer.name
+				// 	const subject = `INVITATION TO REGISTER IN ${details.companyName.toUpperCase()}`
+				// 	const body = `<div>
+				//                   ${invitor} is inviting you to register in <b>${details.companyName}</b>. Click on the below link to register:
+				//                   <a href='${web_url}/invitations/${newToken}' >
+				//                   <button name="button" style="background:#3630a3;color:white; cursor:pointer">Click here to register</button>
+				//                   </a>
+
+				//               </div>`
+				// 	emailSender.openMail(employeeEmail, subject, body)
+				// 	return employeeEmail
+				// })
+				.catch((err) => {
+					throw err
+				})
+		)
 	}
 
 	async _bulk_invite() {
