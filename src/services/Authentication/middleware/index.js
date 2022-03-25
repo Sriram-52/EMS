@@ -14,7 +14,16 @@ export const tokenListner = (dispatch) => {
 					console.log(idToken)
 					axios.defaults.headers.common['Authorization'] = `Bearer ${idToken}`
 					axios.defaults.baseURL = import.meta.env.VITE_APP_BASE_URL
-					return dispatch(dispatcher(ACTIONS.SIGN_IN_SUCCESS, { user }))
+					return firebase
+						.firestore()
+						.collection('EMPLOYEES')
+						.doc(user.uid)
+						.get()
+				})
+				.then((doc) => {
+					return dispatch(
+						dispatcher(ACTIONS.SIGN_IN_SUCCESS, { user: doc.data() })
+					)
 				})
 				.catch((err) => {
 					console.error(err)
@@ -44,7 +53,12 @@ export const signIn =
 				console.log(idToken)
 				axios.defaults.headers.common['Authorization'] = `Bearer ${idToken}`
 				axios.defaults.baseURL = import.meta.env.VITE_APP_BASE_URL
-				return dispatch(dispatcher(ACTIONS.SIGN_IN_SUCCESS, { user }))
+				return firebase.firestore().collection('EMPLOYEES').doc(user.uid).get()
+			})
+			.then((doc) => {
+				return dispatch(
+					dispatcher(ACTIONS.SIGN_IN_SUCCESS, { user: doc.data() })
+				)
 			})
 			.catch((err) => {
 				console.error(err)
