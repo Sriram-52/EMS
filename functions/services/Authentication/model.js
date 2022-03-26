@@ -199,6 +199,33 @@ class Authentication {
 								registeredAt: registeredAt,
 							},
 						})
+						const { firstName, middleName, lastName, gender, department } =
+							employeeInfo.personalDetails
+						const formattedName = [firstName, middleName, lastName]
+							.filter((item) => item !== '')
+							.join(' ')
+						const metaDoc = {
+							uid: customID,
+							name: formattedName,
+							email: emailId,
+							photoURL: employeeInfo.imageURL,
+							isSupervisor: false,
+							designation: 'user',
+							jobtitle: '',
+							status: 'active',
+							companyID: customID,
+							gender: gender,
+							department: department,
+							category: '',
+						}
+
+						batch.set(
+							metaRef,
+							{
+								[customID]: metaDoc,
+							},
+							{ merge: true }
+						)
 						return batch.commit()
 					})
 					.then(() => {
