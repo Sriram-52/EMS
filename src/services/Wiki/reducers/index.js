@@ -1,11 +1,12 @@
-const initialState = {}
+import { combineReducers } from 'redux'
+import articleReducer from './articles'
+import categoryReducer from './category'
+import commentReducer from './comments'
+import historyReducer from './history'
 
-export default (state = initialState, { type, payload }) => {
-	switch (type) {
-		case 'first':
-			return { ...state, ...payload }
-
-		default:
-			return state
-	}
-}
+export default combineReducers({
+	articles: articleReducer,
+	category: categoryReducer,
+	comments: commentReducer,
+	history: historyReducer,
+})

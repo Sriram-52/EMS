@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import dashboardReducer from '../services/Dashboard/reducers'
 import authReducer from '../services/Authentication/reducers'
 import taskReducer from '../services/TaskManagement/reducers'
 import wikiReducer from '../services/Wiki/reducers'
@@ -6,6 +7,7 @@ import employeeReducer from '../services/EmployeeManagement/reducers'
 import ACTIONS from '../services/Authentication/actions'
 
 const appReducer = combineReducers({
+	default: dashboardReducer,
 	auth: authReducer,
 	task: taskReducer,
 	wiki: wikiReducer,

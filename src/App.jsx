@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom'
-import './App.css'
 import { tokenListner } from './services/Authentication/middleware'
 import CustomBackDrop from './utils/components/customBackdrop'
 import Drawer from './services/Dashboard/components/Drawer'
