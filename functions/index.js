@@ -4,6 +4,9 @@ const config = require('./config.json')
 
 const app = require('express')()
 
+const morgan = require('morgan')
+app.use(morgan('dev'))
+
 const cors = require('cors')({ origin: true })
 app.use(cors)
 

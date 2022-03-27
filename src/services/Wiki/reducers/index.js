@@ -6,7 +6,7 @@ import historyReducer from './history'
 
 export default combineReducers({
 	articles: articleReducer,
-	category: categoryReducer,
+	categories: categoryReducer,
 	comments: commentReducer,
 	history: historyReducer,
 })

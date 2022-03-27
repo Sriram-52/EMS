@@ -25,6 +25,7 @@ import {
 import { Switch, Redirect, Route, Link } from 'react-router-dom'
 import { protectedRoutes } from '../../../../routes'
 import { modules } from '../../../../modules'
+import UnAuthorized from '../../../../utils/components/unAuth'
 
 const drawerWidth = 240
 
@@ -241,8 +242,21 @@ export default function Presentation(props) {
 			<main className={classes.content}>
 				<div className={classes.toolbar} />
 				<Switch>
-					{protectedRoutes.map(({ path, component }, idx) => {
-						return <Route key={idx} exact path={path} component={component} />
+					{protectedRoutes.map(({ path, component, moduleName }) => {
+						if (
+							(accessModules.includes(moduleName) ||
+								accessModules.includes('console-customization') ||
+								moduleName === 'common-module') &&
+							user.status === 'active'
+						) {
+							return (
+								<Route key={path} exact path={path} component={component} />
+							)
+						} else {
+							return (
+								<Route key={path} exact path={path} component={UnAuthorized} />
+							)
+						}
 					})}
 					<Redirect from='/signIn' to='/' />
 				</Switch>

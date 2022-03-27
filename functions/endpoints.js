@@ -29,7 +29,6 @@ const closedEnd = (req, res, next) => {
 				uid: userData.uid,
 				name: name,
 			}
-			console.log(`${req.user.uid}(${req.user.name}) --> ${req.originalUrl}`)
 			return next()
 		})
 		.catch((err) => {

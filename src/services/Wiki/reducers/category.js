@@ -5,6 +5,8 @@ const initialState = {
 	create: { loading: false, data: {}, error: null },
 	update: { loading: false, data: {}, error: null },
 	delete: { loading: false, data: {}, error: null },
+	firstUsage: { loading: false, data: {}, error: null },
+	meta: { loading: true, data: {}, error: null },
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -37,6 +39,36 @@ export default (state = initialState, { type, payload }) => {
 				...state,
 				list: {
 					...state.list,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.GET_CATEGORIES_META_REQ:
+			return {
+				...state,
+				meta: {
+					...state.meta,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.GET_CATEGORIES_META_SUCCESS:
+			return {
+				...state,
+				meta: {
+					...state.meta,
+					data: payload,
+					loading: false,
+				},
+			}
+
+		case ACTIONS.GET_CATEGORIES_META_FAILURE:
+			return {
+				...state,
+				meta: {
+					...state.meta,
 					loading: false,
 					error: payload,
 				},
@@ -126,6 +158,35 @@ export default (state = initialState, { type, payload }) => {
 				...state,
 				delete: {
 					...state.delete,
+					loading: false,
+					error: payload,
+				},
+			}
+		case ACTIONS.CHECK_FIRST_USAGE_REQ:
+			return {
+				...state,
+				firstUsage: {
+					...state.firstUsage,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.CHECK_FIRST_USAGE_SUCCESS:
+			return {
+				...state,
+				firstUsage: {
+					...state.firstUsage,
+					loading: false,
+					data: payload,
+				},
+			}
+
+		case ACTIONS.CHECK_FIRST_USAGE_FAILURE:
+			return {
+				...state,
+				firstUsage: {
+					...state.firstUsage,
 					loading: false,
 					error: payload,
 				},

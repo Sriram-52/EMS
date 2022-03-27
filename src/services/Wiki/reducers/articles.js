@@ -2,6 +2,8 @@ import ACTIONS from '../actions'
 
 const initialState = {
 	list: { loading: true, data: {}, error: null },
+	recent: { loading: true, data: {}, error: null },
+	archived: { loading: true, data: {}, error: null },
 	create: { loading: false, data: {}, error: null },
 	update: { loading: false, data: {}, error: null },
 	delete: { loading: false, data: {}, error: null },
@@ -9,6 +11,7 @@ const initialState = {
 	vote: { loading: false, data: {}, error: null },
 	restore: { loading: false, data: {}, error: null },
 	revert: { loading: false, data: {}, error: null },
+	selected: { loading: true, data: {}, error: null },
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -41,6 +44,96 @@ export default (state = initialState, { type, payload }) => {
 				...state,
 				list: {
 					...state.list,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.GET_SELECTED_ARTICLE_REQ:
+			return {
+				...state,
+				selected: {
+					...state.selected,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.GET_SELECTED_ARTICLE_SUCCESS:
+			return {
+				...state,
+				selected: {
+					...state.selected,
+					data: payload,
+					loading: false,
+				},
+			}
+
+		case ACTIONS.GET_SELECTED_ARTICLE_FAILURE:
+			return {
+				...state,
+				selected: {
+					...state.selected,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.GET_RECENTLY_ARTICLES_REQ:
+			return {
+				...state,
+				recent: {
+					...state.recent,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.GET_RECENTLY_ARTICLES_SUCCESS:
+			return {
+				...state,
+				recent: {
+					...state.recent,
+					data: payload,
+					loading: false,
+				},
+			}
+
+		case ACTIONS.GET_RECENTLY_ARTICLES_FAILURE:
+			return {
+				...state,
+				recent: {
+					...state.recent,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.GET_ARCHIVED_ARTICLES_REQ:
+			return {
+				...state,
+				archived: {
+					...state.archived,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.GET_ARCHIVED_ARTICLES_SUCCESS:
+			return {
+				...state,
+				archived: {
+					...state.archived,
+					data: payload,
+					loading: false,
+				},
+			}
+
+		case ACTIONS.GET_ARCHIVED_ARTICLES_FAILURE:
+			return {
+				...state,
+				archived: {
+					...state.archived,
 					loading: false,
 					error: payload,
 				},

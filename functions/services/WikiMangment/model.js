@@ -279,12 +279,8 @@ class WikiMangment {
 	async restoreArticle(articleId, categoryId) {
 		const articleRef = db.collection(`${this.articleRef}`).doc(articleId)
 		const historyRef = articleRef.collection('ARTICLE_HISTORY').doc()
-		const categoryRef = db
-			.collection('ID_TRACKER')
-			.doc('categories')
-			.collection('CATEGORIES_DOCS')
-			.doc(categoryId)
-		const metaRef = db.collection('ID_TRACKER').doc('categories')
+		const categoryRef = db.collection(this.categoryRef).doc(categoryId)
+		const metaRef = db.collection('WIKI').doc('categories')
 		let categoryInfo, articleInfo, metaInfo
 		const fieldValue = admin.firestore.FieldValue
 		return metaRef
@@ -481,15 +477,11 @@ class WikiMangment {
 	}
 
 	async deleteCategory(categoryId) {
-		const categoryRef = db
-			.collection('ID_TRACKER')
-			.doc('categories')
-			.collection('CATEGORIES_DOCS')
-			.doc(categoryId)
+		const categoryRef = db.collection(this.categoryRef).doc(categoryId)
 
 		const batch = db.batch()
 
-		const metaRef = db.collection('ID_TRACKER').doc('categories')
+		const metaRef = db.collection('WIKI').doc('categories')
 
 		let categoryInfo, metaInfo
 

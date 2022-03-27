@@ -20,13 +20,11 @@ export default function Container() {
 	}, [])
 
 	const loaderCondition = () => {
-		if (loading || error) {
-			return true
+		let flag = false
+		if (loading || error || Object.keys(metaInfo.data).length === 0) {
+			flag = true
 		}
-		if (metaInfo.loading || metaInfo.error) {
-			return true
-		}
-		return false
+		return flag
 	}
 
 	const handleSignOut = () => {

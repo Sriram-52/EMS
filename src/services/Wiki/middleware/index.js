@@ -33,6 +33,29 @@ export const followOrUnfollow = (articleId, type) => (dispatch) => {
 		})
 }
 
+export const getComments = (articleId) => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.GET_COMMENTS_REQ))
+	const unSubscribe = firebase
+		.firestore()
+		.collection(`WIKI/articles/ARTICLE_DOCS/${articleId}/ARTICLE_COMMENTS`)
+		.where('isExist', '==', true)
+		.onSnapshot(
+			(querySnapshot) => {
+				const comments = {}
+				querySnapshot.docs.forEach((doc) => {
+					comments[doc.id] = doc.data()
+				})
+				return dispatch(
+					dispatcher(ACTIONS.GET_COMMENTS_SUCCESS, { [articleId]: comments })
+				)
+			},
+			(err) => {
+				const errMsg = err.message || 'Failed to get comments'
+				return dispatch(dispatcher(ACTIONS.GET_COMMENTS_FAILURE, errMsg))
+			}
+		)
+}
+
 export const newComment = (payload, articleId, callback) => (dispatch) => {
 	dispatch(dispatcher(ACTIONS.NEW_COMMENT_REQ))
 	return HttpService.postRequest({
@@ -117,7 +140,7 @@ export const revertArticle =
 
 export const deleteArticle = (articleId, callback) => (dispatch) => {
 	dispatch(dispatcher(ACTIONS.DELETE_ARTICLE_REQ))
-	return HttpService.putRequest({
+	return HttpService.deleteRequest({
 		url: `/wiki/deletearticle/${articleId}`,
 	})
 		.then((res) => {
@@ -148,7 +171,7 @@ export const updateArticle =
 
 export const addNewArticle = (payload, categoryId, callback) => (dispatch) => {
 	dispatch(dispatcher(ACTIONS.CREATE_ARTICLE_REQ))
-	return HttpService.putRequest({
+	return HttpService.postRequest({
 		url: `/wiki/newarticle/${categoryId}`,
 		body: payload,
 	})
@@ -213,11 +236,107 @@ export const deleteCategory = (categoryId, resolve, reject) => (dispatch) => {
 		})
 }
 
+export const getHistoryById = (articleId, historyId) => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.GET_SELECTED_ARTICLE_HISTORY_REQ))
+	return firebase
+		.firestore()
+		.doc(`WIKI/articles/ARTICLE_DOCS/${articleId}/ARTICLE_HISTORY/${historyId}`)
+		.get()
+		.then((doc) => {
+			if (!doc.exists) throw new Error('no-doc')
+			return dispatch(
+				dispatcher(ACTIONS.GET_SELECTED_ARTICLE_HISTORY_SUCCESS, doc.data())
+			)
+		})
+		.catch((err) => {
+			const errMsg = err.message || 'Failed to load history'
+			return dispatch(
+				dispatcher(ACTIONS.GET_SELECTED_ARTICLE_HISTORY_FAILURE, errMsg)
+			)
+		})
+}
+
+export const getArticleHistory = (articleId) => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.GET_ARTICLE_HISTORY_REQ))
+	const unSubscribe = firebase
+		.firestore()
+		.collection(`WIKI/articles/ARTICLE_DOCS/${articleId}/ARTICLE_HISTORY`)
+		.onSnapshot(
+			(querySnapshot) => {
+				const history = {}
+				querySnapshot.docs.forEach((doc) => {
+					history[doc.id] = doc.data()
+				})
+				return dispatch(
+					dispatcher(ACTIONS.GET_ARTICLE_HISTORY_SUCCESS, {
+						[articleId]: history,
+					})
+				)
+			},
+			(err) => {
+				const errMsg = err.message || 'Failed to load history'
+				return dispatch(dispatcher(ACTIONS.GET_ARTICLE_HISTORY_FAILURE, errMsg))
+			}
+		)
+}
+
+export const checkFirstUsage = () => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.CHECK_FIRST_USAGE_REQ))
+	return firebase
+		.firestore()
+		.doc('WIKI/categories')
+		.get()
+		.then((docSnapshot) => {
+			if (docSnapshot.exists) {
+				return dispatch(dispatcher(ACTIONS.CHECK_FIRST_USAGE_SUCCESS, false))
+			}
+			const promises = []
+			const promise1 = HttpService.postRequest({
+				url: `/wiki/newCategory`,
+				body: { name: 'General', description: 'Default category' },
+			})
+			promises.push(promise1)
+			const promise2 = HttpService.postRequest({
+				url: `/wiki/newCategory`,
+				body: { name: 'Knowledge', description: 'Default category' },
+			})
+			promises.push(promise2)
+			return Promise.all(promises)
+		})
+		.then(() => {
+			return dispatch(dispatcher(ACTIONS.CHECK_FIRST_USAGE_SUCCESS, true))
+		})
+		.catch((err) => {
+			console.error(err)
+			const errMsg = err.message || 'Something went wrong'
+			return dispatch(dispatcher(ACTIONS.CHECK_FIRST_USAGE_FAILURE, errMsg))
+		})
+}
+
+export const getCategoriesMetaInfo = () => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.GET_CATEGORIES_META_REQ))
+	const unSubscribe = firebase
+		.firestore()
+		.doc('WIKI/categories')
+		.onSnapshot(
+			(docSnapshot) => {
+				return dispatch(
+					dispatcher(ACTIONS.GET_CATEGORIES_META_SUCCESS, docSnapshot.data())
+				)
+			},
+			(err) => {
+				const errMsg = err.message || 'Failed to get data'
+				return dispatch(dispatcher(ACTIONS.GET_CATEGORIES_META_FAILURE, errMsg))
+			}
+		)
+}
+
 export const getCategories = () => (dispatch) => {
 	dispatch(dispatcher(ACTIONS.GET_CATEGORIES_REQ))
 	const unSubscribe = firebase
 		.firestore()
 		.collection('WIKI/categories/CATEGORY_DOCS')
+		.where('isExist', '==', true)
 		.onSnapshot(
 			(querySnapshot) => {
 				const categories = {}
@@ -227,6 +346,7 @@ export const getCategories = () => (dispatch) => {
 				return dispatch(dispatcher(ACTIONS.GET_CATEGORIES_SUCCESS, categories))
 			},
 			(err) => {
+				console.error(err)
 				const errMsg = err.message || 'Failed to get categories'
 				return dispatch(dispatcher(ACTIONS.GET_CATEGORIES_FAILURE, errMsg))
 			}
@@ -252,7 +372,90 @@ export const getArticles = (categoryId) => (dispatch) => {
 			)
 		})
 		.catch((err) => {
+			console.error(err)
 			const errMsg = err.message || 'Failed to get categories'
 			return dispatch(dispatcher(ACTIONS.GET_ARTICLES_FAILURE, errMsg))
 		})
+}
+
+export const getArticle = (articleId) => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.GET_SELECTED_ARTICLE_REQ))
+	return firebase
+		.firestore()
+		.doc(`WIKI/articles/ARTICLE_DOCS/${articleId}`)
+		.get()
+		.then((doc) => {
+			if (!doc.exists) throw new Error('no-doc')
+			return dispatch(
+				dispatcher(ACTIONS.GET_SELECTED_ARTICLE_SUCCESS, doc.data())
+			)
+		})
+		.catch((err) => {
+			console.error(err)
+			if (err.toString().match('no-doc')) {
+				return dispatch(
+					dispatcher(
+						ACTIONS.GET_SELECTED_ARTICLE_FAILURE,
+						'No document found with given id'
+					)
+				)
+			}
+			const errMsg = err.message || 'Failed to get categories'
+			return dispatch(dispatcher(ACTIONS.GET_SELECTED_ARTICLE_FAILURE, errMsg))
+		})
+}
+
+export const getRecentlyAddedArticles = () => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.GET_RECENTLY_ARTICLES_REQ))
+	const unSubscribe = firebase
+		.firestore()
+		.collection('WIKI/articles/ARTICLE_DOCS')
+		.where('isExist', '==', true)
+		.orderBy('createdAt', 'desc')
+		.limit(5)
+		.onSnapshot(
+			(querySnapshot) => {
+				const articles = {}
+				querySnapshot.docs.forEach((doc) => {
+					articles[doc.id] = doc.data()
+				})
+				return dispatch(
+					dispatcher(ACTIONS.GET_RECENTLY_ARTICLES_SUCCESS, articles)
+				)
+			},
+			(err) => {
+				console.error(err)
+				const errMsg = err.message || 'Failed to get articles'
+				return dispatch(
+					dispatcher(ACTIONS.GET_RECENTLY_ARTICLES_FAILURE, errMsg)
+				)
+			}
+		)
+}
+
+export const getArchivedArticles = () => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.GET_ARCHIVED_ARTICLES_REQ))
+	const unSubscribe = firebase
+		.firestore()
+		.collection('WIKI/articles/ARTICLE_DOCS')
+		.where('isExist', '==', false)
+		.orderBy('createdAt', 'desc')
+		.onSnapshot(
+			(querySnapshot) => {
+				const articles = {}
+				querySnapshot.docs.forEach((doc) => {
+					articles[doc.id] = doc.data()
+				})
+				return dispatch(
+					dispatcher(ACTIONS.GET_ARCHIVED_ARTICLES_SUCCESS, articles)
+				)
+			},
+			(err) => {
+				console.error(err)
+				const errMsg = err.message || 'Failed to get articles'
+				return dispatch(
+					dispatcher(ACTIONS.GET_ARCHIVED_ARTICLES_FAILURE, errMsg)
+				)
+			}
+		)
 }

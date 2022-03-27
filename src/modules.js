@@ -21,12 +21,6 @@ export const modules = [
 		moduleName: 'wiki',
 	},
 	{
-		text: 'Invite employee',
-		Icon: TiUserAdd,
-		link: '/console/inviteemployee',
-		moduleName: 'console-customization',
-	},
-	{
 		text: 'Employee list',
 		Icon: FaUsers,
 		link: '/console/employees',
