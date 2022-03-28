@@ -1,6 +1,10 @@
 import { combineReducers } from 'redux'
-import projectReducer from './projects'
+import projectsReducer from './projects'
+import projectListReducer from './projectList'
+import taskListReducer from './taskList'
 
 export default combineReducers({
-	projects: projectReducer,
+	projects: projectsReducer,
+	projectList: projectListReducer,
+	taskList: taskListReducer,
 })

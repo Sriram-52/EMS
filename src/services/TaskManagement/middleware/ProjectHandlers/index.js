@@ -1,151 +1,128 @@
-import firebase from '../../../../utils/firebase'
 import ACTIONS from '../../actions'
 import { dispatcher } from '../../../../utils/functions/dispatcher'
+import HttpService from '../../../../utils/http'
+import firebase from '../../../../utils/firebase'
 
-export const loadAllProjects = () => (dispatch, getState) => {
-	dispatch(dispatcher(ACTIONS.LOAD_ALL_PROJECTS_REQ))
-	const modules = getState().employee.default.modules.data
-	const uid = firebase.auth().currentUser.uid
-	const unSubscribe = firebase
-		.firestore()
-		.collection('PROJECTS')
-		.where('isExist', '==', true)
-		.onSnapshot(
-			(querySnapshot) => {
-				const projects = {}
-				querySnapshot.docs
-					.filter(
-						(doc) =>
-							uid in doc.data().users ||
-							modules.includes('console-customization') ||
-							modules.includes('task-management-manager')
-					)
-					.forEach((doc) => {
-						projects[doc.id] = doc.data()
-					})
-
-				return dispatch(dispatcher(ACTIONS.LOAD_ALL_PROJECTS_SUCCESS, projects))
-			},
-			(err) => {
-				console.error(err)
-				const errMsg = err.message || 'Failed to get projects'
-				return dispatch(dispatcher(ACTIONS.LOAD_ALL_PROJECTS_FAILURE, errMsg))
-			}
-		)
+export const newProject = (payload, callback) => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.NEW_PROJECT_REQ))
+	return HttpService.postRequest({ url: '/projects/newproject', body: payload })
+		.then((res) => {
+			callback()
+			return dispatch(dispatcher(ACTIONS.NEW_PROJECT_SUCCESS, res))
+		})
+		.catch((err) => {
+			const errMsg = err.message || 'Failed to add project'
+			return dispatch(dispatcher(ACTIONS.NEW_PROJECT_FAILURE, errMsg))
+		})
 }
 
-export const loadInProgressProjects = () => (dispatch, getState) => {
-	dispatch(dispatcher(ACTIONS.LOAD_INPROGRESS_PROJECTS_REQ))
-	const modules = getState().employee.default.modules.data
-	const uid = firebase.auth().currentUser.uid
+export const loadSelectedProject = (projectId) => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.LOAD_SELECTED_PROJECT_REQ))
 	const unSubscribe = firebase
 		.firestore()
-		.collection('PROJECTS')
-		.where('isExist', '==', true)
-		.where('status', '==', 'open')
+		.doc(`PROJECTS/${projectId}`)
 		.onSnapshot(
-			(querySnapshot) => {
-				const projects = {}
-				querySnapshot.docs
-					.filter(
-						(doc) =>
-							uid in doc.data().users ||
-							modules.includes('console-customization') ||
-							modules.includes('task-management-manager')
-					)
-					.forEach((doc) => {
-						projects[doc.id] = doc.data()
-					})
-
+			(doc) => {
+				if (!doc.exists) throw new Error('no-doc')
 				return dispatch(
-					dispatcher(ACTIONS.LOAD_INPROGRESS_PROJECTS_SUCCESS, projects)
+					dispatcher(ACTIONS.LOAD_SELECTED_PROJECT_SUCCESS, doc.data())
 				)
 			},
 			(err) => {
-				console.error(err)
-				const errMsg = err.message || 'Failed to get projects'
+				const errMsg = err.message || 'Failed to load project'
 				return dispatch(
-					dispatcher(ACTIONS.LOAD_INPROGRESS_PROJECTS_FAILURE, errMsg)
+					dispatcher(ACTIONS.LOAD_SELECTED_PROJECT_FAILURE, errMsg)
 				)
 			}
 		)
 }
 
-export const loadClosedProjects = () => (dispatch, getState) => {
-	dispatch(dispatcher(ACTIONS.LOAD_CLOSED_PROJECTS_REQ))
-	const modules = getState().employee.default.modules.data
-	const uid = firebase.auth().currentUser.uid
+export const addMember =
+	({ employees, projectId }) =>
+	(dispatch) => {
+		dispatch(dispatcher(ACTIONS.ADD_MEMBERS_REQ))
+		return HttpService.postRequest({
+			url: `/projects/${projectId}/addemployee`,
+			body: { employees },
+		})
+			.then((res) => {
+				return dispatch(dispatcher(ACTIONS.ADD_MEMBERS_SUCCESS, res))
+			})
+			.catch((err) => {
+				const errMsg = err.message || 'Failed to add members'
+				return dispatch(dispatcher(ACTIONS.ADD_MEMBERS_FAILURE, errMsg))
+			})
+	}
+
+export const removeMember =
+	({ employees, projectId }) =>
+	(dispatch) => {
+		dispatch(dispatcher(ACTIONS.REMOVE_MEMBER_REQ))
+		return HttpService.putRequest({
+			url: `/projects/${projectId}/removeemployee`,
+			body: { employees },
+		})
+			.then((res) => {
+				return dispatch(dispatcher(ACTIONS.REMOVE_MEMBER_SUCCESS, res))
+			})
+			.catch((err) => {
+				const errMsg = err.message || 'Failed to add members'
+				return dispatch(dispatcher(ACTIONS.REMOVE_MEMBER_FAILURE, errMsg))
+			})
+	}
+
+export const updatePermissions = (payload, projectId) => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.UPDATE_PERMISSIONS_REQ))
+	return HttpService.putRequest({
+		url: `/projects/${projectId}/updatepermissions`,
+		body: payload,
+	})
+		.then((res) => {
+			return dispatch(dispatcher(ACTIONS.UPDATE_PERMISSIONS_SUCCESS, res))
+		})
+		.catch((err) => {
+			const errMsg = err.message || 'Failed to add members'
+			return dispatch(dispatcher(ACTIONS.UPDATE_PERMISSIONS_FAILURE, errMsg))
+		})
+}
+
+export const loadProjectTimeLine = (projectID) => (dispatch) => {
+	console.log('Project-Timeline')
+	dispatch(dispatcher(ACTIONS.LOAD_PROJECT_TIMELINE_REQ))
 	const unSubscribe = firebase
 		.firestore()
 		.collection('PROJECTS')
-		.where('isExist', '==', true)
-		.where('status', '==', 'closed')
+		.doc(projectID)
+		.collection('PROJECT_TIMELINE')
+		.orderBy('createdAt', 'desc')
 		.onSnapshot(
-			(querySnapshot) => {
-				const projects = {}
-				querySnapshot.docs
-					.filter(
-						(doc) =>
-							uid in doc.data().users ||
-							modules.includes('console-customization') ||
-							modules.includes('task-management-manager')
-					)
-					.forEach((doc) => {
-						projects[doc.id] = doc.data()
-					})
-
-				return dispatch(
-					dispatcher(ACTIONS.LOAD_CLOSED_PROJECTS_SUCCESS, projects)
-				)
+			(snap) => {
+				const data = {}
+				snap.docs.forEach((doc) => {
+					data[doc.id] = doc.data()
+				})
+				return dispatch(dispatcher(ACTIONS.LOAD_PROJECT_TIMELINE_SUCCESS, data))
 			},
 			(err) => {
 				console.error(err)
-				const errMsg = err.message || 'Failed to get projects'
-				return dispatch(
-					dispatcher(ACTIONS.LOAD_CLOSED_PROJECTS_FAILURE, errMsg)
-				)
+				const msg = 'Failed To Load  Project Timeline'
+				errorMsg(msg)
+				return dispatch(dispatcher(ACTIONS.LOAD_PROJECT_TIMELINE_FAILURE, msg))
 			}
 		)
 }
 
-export const loadOverDueProjects = () => (dispatch, getState) => {
-	dispatch(dispatcher(ACTIONS.LOAD_OVERDUE_PROJECTS_REQ))
-	const modules = getState().employee.default.modules.data
-	const uid = firebase.auth().currentUser.uid
-	const unSubscribe = firebase
-		.firestore()
-		.collection('PROJECTS')
-		.where('isExist', '==', true)
-		.onSnapshot(
-			(querySnapshot) => {
-				const projects = {}
-				querySnapshot.docs
-					.filter((doc) => {
-						const item = doc.data()
-						return (
-							(uid in item.users ||
-								modules.includes('console-customization') ||
-								modules.includes('task-management-manager')) &&
-							item.isExist &&
-							item.status === 'open' &&
-							new Date(item.endDate) < new Date() &&
-							new Date(item.startDate) < new Date()
-						)
-					})
-					.forEach((doc) => {
-						projects[doc.id] = doc.data()
-					})
-
-				return dispatch(
-					dispatcher(ACTIONS.LOAD_OVERDUE_PROJECTS_SUCCESS, projects)
-				)
-			},
-			(err) => {
-				console.error(err)
-				const errMsg = err.message || 'Failed to get projects'
-				return dispatch(
-					dispatcher(ACTIONS.LOAD_OVERDUE_PROJECTS_FAILURE, errMsg)
-				)
-			}
-		)
+export const updateProject = (payload, projectId) => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.UPDATE_PROJECT_REQ))
+	return HttpService.putRequest({
+		url: `/projects/${projectId}/updateproject`,
+		body: payload,
+	})
+		.then((res) => {
+			return dispatch(dispatcher(ACTIONS.UPDATE_PROJECT_SUCCESS, res))
+		})
+		.catch((err) => {
+			const errMsg = err.message || 'Failed to update project'
+			return dispatch(dispatcher(ACTIONS.UPDATE_PROJECT_FAILURE, errMsg))
+		})
 }

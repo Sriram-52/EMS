@@ -1,129 +1,284 @@
 import ACTIONS from '../actions'
 
 const initialState = {
-	all: { loading: true, data: {}, error: null },
-	inProgress: { loading: true, data: {}, error: null },
-	overDue: { loading: true, data: {}, error: null },
-	closed: { loading: true, data: {}, error: null },
+	newProject: { loading: false, data: {}, error: null },
+	selectedProject: { loading: true, data: {}, error: null },
+	addMember: { loading: false, data: {}, error: null },
+	updatePermission: { loading: false, data: {}, error: null },
+	removeMember: { loading: false, data: {}, error: null },
+	timeline: { loading: true, data: {}, error: null },
+	addLabels: { loading: false, data: {}, error: null },
+	updateLabels: { loading: false, data: {}, error: null },
+	deleteLabels: { loading: false, data: {}, error: null },
 }
 
 export default (state = initialState, { type, payload }) => {
 	switch (type) {
-		case ACTIONS.LOAD_ALL_PROJECTS_REQ:
+		case ACTIONS.NEW_PROJECT_REQ:
 			return {
 				...state,
-				all: {
-					...state.all,
+				newProject: {
+					...state.newProject,
 					loading: true,
 					error: null,
 				},
 			}
 
-		case ACTIONS.LOAD_ALL_PROJECTS_SUCCESS:
+		case ACTIONS.NEW_PROJECT_SUCCESS:
 			return {
 				...state,
-				all: {
-					...state.all,
+				newProject: {
+					...state.newProject,
 					loading: false,
 					data: payload,
 				},
 			}
 
-		case ACTIONS.LOAD_ALL_PROJECTS_FAILURE:
+		case ACTIONS.NEW_PROJECT_FAILURE:
 			return {
 				...state,
-				all: {
-					...state.all,
+				newProject: {
+					...state.newProject,
 					loading: false,
 					error: payload,
 				},
 			}
 
-		case ACTIONS.LOAD_INPROGRESS_PROJECTS_REQ:
+		case ACTIONS.CREATE_LABELS_REQ:
 			return {
 				...state,
-				inProgress: {
-					...state.inProgress,
+				addLabels: {
+					...state.addLabels,
 					loading: true,
 					error: null,
 				},
 			}
 
-		case ACTIONS.LOAD_INPROGRESS_PROJECTS_SUCCESS:
+		case ACTIONS.CREATE_LABELS_SUCCESS:
 			return {
 				...state,
-				inProgress: {
-					...state.inProgress,
+				addLabels: {
+					...state.addLabels,
 					loading: false,
 					data: payload,
 				},
 			}
 
-		case ACTIONS.LOAD_INPROGRESS_PROJECTS_FAILURE:
+		case ACTIONS.CREATE_LABELS_FAILURE:
 			return {
 				...state,
-				inProgress: {
-					...state.inProgress,
+				addLabels: {
+					...state.addLabels,
 					loading: false,
 					error: payload,
 				},
 			}
 
-		case ACTIONS.LOAD_OVERDUE_PROJECTS_REQ:
+		case ACTIONS.UPDATE_LABELS_REQ:
 			return {
 				...state,
-				overDue: {
-					...state.overDue,
+				updateLabels: {
+					...state.updateLabels,
 					loading: true,
 					error: null,
 				},
 			}
 
-		case ACTIONS.LOAD_OVERDUE_PROJECTS_SUCCESS:
+		case ACTIONS.UPDATE_LABELS_SUCCESS:
 			return {
 				...state,
-				overDue: {
-					...state.overDue,
+				updateLabels: {
+					...state.updateLabels,
 					loading: false,
 					data: payload,
 				},
 			}
 
-		case ACTIONS.LOAD_OVERDUE_PROJECTS_FAILURE:
+		case ACTIONS.UPDATE_LABELS_FAILURE:
 			return {
 				...state,
-				overDue: {
-					...state.overDue,
+				updateLabels: {
+					...state.updateLabels,
 					loading: false,
 					error: payload,
 				},
 			}
 
-		case ACTIONS.LOAD_CLOSED_PROJECTS_REQ:
+		case ACTIONS.DELETE_LABELS_REQ:
 			return {
 				...state,
-				closed: {
-					...state.closed,
+				deleteLabels: {
+					...state.deleteLabels,
 					loading: true,
 					error: null,
 				},
 			}
 
-		case ACTIONS.LOAD_CLOSED_PROJECTS_SUCCESS:
+		case ACTIONS.DELETE_LABELS_SUCCESS:
 			return {
 				...state,
-				closed: {
-					...state.closed,
+				deleteLabels: {
+					...state.deleteLabels,
 					loading: false,
 					data: payload,
 				},
 			}
 
-		case ACTIONS.LOAD_CLOSED_PROJECTS_FAILURE:
+		case ACTIONS.DELETE_LABELS_FAILURE:
 			return {
 				...state,
-				closed: {
-					...state.closed,
+				deleteLabels: {
+					...state.deleteLabels,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.ADD_MEMBERS_REQ:
+			return {
+				...state,
+				addMember: {
+					...state.addMember,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.ADD_MEMBERS_SUCCESS:
+			return {
+				...state,
+				addMember: {
+					...state.addMember,
+					loading: false,
+					data: payload,
+				},
+			}
+
+		case ACTIONS.ADD_MEMBERS_FAILURE:
+			return {
+				...state,
+				addMember: {
+					...state.addMember,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.REMOVE_MEMBER_REQ:
+			return {
+				...state,
+				removeMember: {
+					...state.removeMember,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.REMOVE_MEMBER_SUCCESS:
+			return {
+				...state,
+				removeMember: {
+					...state.removeMember,
+					loading: false,
+					data: payload,
+				},
+			}
+
+		case ACTIONS.REMOVE_MEMBER_FAILURE:
+			return {
+				...state,
+				removeMember: {
+					...state.removeMember,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.UPDATE_PERMISSIONS_REQ:
+			return {
+				...state,
+				updatePermission: {
+					...state.updatePermission,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.UPDATE_PERMISSIONS_SUCCESS:
+			return {
+				...state,
+				updatePermission: {
+					...state.updatePermission,
+					loading: false,
+					data: payload,
+				},
+			}
+
+		case ACTIONS.UPDATE_PERMISSIONS_FAILURE:
+			return {
+				...state,
+				updatePermission: {
+					...state.updatePermission,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.LOAD_SELECTED_PROJECT_REQ:
+			return {
+				...state,
+				selectedProject: {
+					...state.selectedProject,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.LOAD_SELECTED_PROJECT_SUCCESS:
+			return {
+				...state,
+				selectedProject: {
+					...state.selectedProject,
+					loading: false,
+					data: payload,
+				},
+			}
+
+		case ACTIONS.LOAD_SELECTED_PROJECT_FAILURE:
+			return {
+				...state,
+				selectedProject: {
+					...state.selectedProject,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.LOAD_PROJECT_TIMELINE_REQ:
+			return {
+				...state,
+				timeline: {
+					...state.timeline,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.LOAD_PROJECT_TIMELINE_SUCCESS:
+			return {
+				...state,
+				timeline: {
+					...state.timeline,
+					loading: false,
+					data: payload,
+				},
+			}
+
+		case ACTIONS.LOAD_PROJECT_TIMELINE_FAILURE:
+			return {
+				...state,
+				timeline: {
+					...state.timeline,
 					loading: false,
 					error: payload,
 				},
