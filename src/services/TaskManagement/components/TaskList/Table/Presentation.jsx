@@ -1,6 +1,6 @@
 import React from 'react'
 import MaterialTable from 'material-table'
-import { Chip } from '@material-ui/core'
+import { Button, Chip } from '@material-ui/core'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import validate from '../../../../../utils/functions/validation'
@@ -121,7 +121,7 @@ export default function Presentation(props) {
 			priority: task.priority,
 			taskId: task.category === 'subtask' ? task.taskId : '',
 			dueby: formatDueBy(task.enddate, task.status),
-			projectId: id,
+			projectId: project.id,
 			labelsList: projectLabels
 				.filter(
 					(item) =>

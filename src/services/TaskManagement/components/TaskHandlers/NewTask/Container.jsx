@@ -1,10 +1,14 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { newProject } from '../../../middleware/ProjectHandlers'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { createTask } from '../../../middleware/TaskHandlers'
 import Presentation from './Presentation'
 
 export default function Container(props) {
 	const { projectId } = props
+
+	const selectedProject = useSelector(
+		(appState) => appState.task.projects.selectedProject.data
+	)
 
 	const [state, setState] = useState({
 		name: '',
@@ -15,11 +19,22 @@ export default function Container(props) {
 		priority: '',
 		labels: [],
 		assignee: [],
-		projectAssignee: [],
+		projectAssignees: [],
 		isCreated: false,
 		setReminder: false,
 		reminderDate: '',
 	})
+
+	useEffect(() => {
+		setState((prevState) => {
+			return {
+				...prevState,
+				projectAssignees: Object.values(selectedProject.Users || {}).map(
+					({ uid }) => uid
+				),
+			}
+		})
+	}, [projectId])
 
 	const [open, setOpen] = useState(false)
 
@@ -65,11 +80,13 @@ export default function Container(props) {
 			},
 			projectId: projectId,
 		}
+		dispatch(createTask(data, callback))
 	}
 
 	return (
 		<Presentation
 			state={state}
+			project={selectedProject}
 			handleChange={handleChange}
 			handleSubmit={handleSubmit}
 			open={open}

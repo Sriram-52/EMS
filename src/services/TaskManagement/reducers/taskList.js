@@ -27,7 +27,7 @@ export default (state = initialState, { type, payload }) => {
 				all: {
 					...state.all,
 					loading: false,
-					error: null,
+					data: payload,
 				},
 			}
 
@@ -57,7 +57,7 @@ export default (state = initialState, { type, payload }) => {
 				open: {
 					...state.open,
 					loading: false,
-					error: null,
+					data: payload,
 				},
 			}
 
@@ -87,7 +87,7 @@ export default (state = initialState, { type, payload }) => {
 				inProgress: {
 					...state.inProgress,
 					loading: false,
-					error: null,
+					data: payload,
 				},
 			}
 
@@ -117,7 +117,7 @@ export default (state = initialState, { type, payload }) => {
 				review: {
 					...state.review,
 					loading: false,
-					error: null,
+					data: payload,
 				},
 			}
 
@@ -147,7 +147,7 @@ export default (state = initialState, { type, payload }) => {
 				overDue: {
 					...state.overDue,
 					loading: false,
-					error: null,
+					data: payload,
 				},
 			}
 
@@ -177,7 +177,7 @@ export default (state = initialState, { type, payload }) => {
 				closed: {
 					...state.closed,
 					loading: false,
-					error: null,
+					data: payload,
 				},
 			}
 

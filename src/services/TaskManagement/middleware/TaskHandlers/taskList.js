@@ -15,6 +15,7 @@ export const loadAllTasks = (projectID) => (dispatch) => {
 				snap.docs.forEach((doc) => {
 					data[doc.id] = doc.data()
 				})
+				console.log({ data })
 				return dispatch(dispatcher(ACTIONS.LOAD_ALL_TASKS_SUCCESS, data))
 			},
 			(err) => {
