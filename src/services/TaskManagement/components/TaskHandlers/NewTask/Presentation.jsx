@@ -33,6 +33,7 @@ export default function Presentation(props) {
 		handleClickOpen,
 		handleClose,
 		project,
+		isEdit,
 	} = props
 
 	const classes = useStyles()
@@ -40,14 +41,16 @@ export default function Presentation(props) {
 	const metaInfo = new MetaInfo()
 	const labels = Object.values(project.labels).filter((e) => e.isExist)
 
+	const title = isEdit ? 'Update Task' : 'New Task'
+
 	return (
 		<div>
-			<Tooltip title='New Task' aria-label='excel_tooltip'>
+			<Tooltip title={title} aria-label='excel_tooltip'>
 				<Button variant='contained' color='secondary' onClick={handleClickOpen}>
-					Add new Task
+					{title}
 				</Button>
 			</Tooltip>
-			<CommonDialog open={open} handleClose={handleClose} title='New Task'>
+			<CommonDialog open={open} handleClose={handleClose} title={title}>
 				<Grid component='form' onSubmit={handleSubmit} container spacing={1}>
 					<Grid item xs={12} sm={6}>
 						<TextInput
@@ -134,6 +137,9 @@ export default function Presentation(props) {
 								multiple
 								filterSelectedOptions
 								id='tm-new-task-labels'
+								value={state.labels.map((id) =>
+									labels.find((label) => label.id === id)
+								)}
 								options={labels}
 								getOptionLabel={(option) => option.name}
 								renderOption={(option) => (
@@ -217,7 +223,11 @@ export default function Presentation(props) {
 						/>
 					</Grid>
 					<Grid item xs={12} className='mt-2'>
-						<CustomButton type='submit' btnText={'Create'} />
+						<CustomButton
+							type='submit'
+							btnText={isEdit ? 'Update' : 'Create'}
+							color={isEdit ? 'secondary' : 'primary'}
+						/>
 					</Grid>
 				</Grid>
 			</CommonDialog>

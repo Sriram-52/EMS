@@ -21,6 +21,7 @@ import WikiSettingsPage from './services/Wiki/components/WikiSettings'
 import ViewArticlePage from './services/Wiki/pages/ViewArticlePage'
 import ArticleHistoryPage from './services/Wiki/pages/ArticleHistoryPage'
 import ViewArticleHistoryPage from './services/Wiki/pages/ViewArticleHistoryPage'
+import ViewTaskPage from './services/TaskManagement/components/TaskHandlers/ViewTask'
 
 export const unProtectedRoutes = [
 	{ path: '/signIn', component: SignIn },
@@ -76,6 +77,11 @@ export const protectedRoutes = [
 	{
 		path: '/console/projects/:projectId/tasks',
 		component: TaskListPage,
+		moduleName: 'task-management',
+	},
+	{
+		path: '/console/projects/:projectId/tasks/:taskId',
+		component: ViewTaskPage,
 		moduleName: 'task-management',
 	},
 	{

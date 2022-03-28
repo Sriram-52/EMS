@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { createTask } from '../../../middleware/TaskHandlers'
+import { createTask, editTask } from '../../../middleware/TaskHandlers'
 import Presentation from './Presentation'
 
 export default function Container(props) {
-	const { projectId } = props
+	const { projectId, isEdit = false, taskId = '' } = props
 
 	const selectedProject = useSelector(
 		(appState) => appState.task.projects.selectedProject.data
+	)
+	const selectedTask = useSelector(
+		(appState) => appState.task.taskList.selectedTask.data
 	)
 
 	const [state, setState] = useState({
@@ -35,6 +38,27 @@ export default function Container(props) {
 			}
 		})
 	}, [projectId])
+
+	useEffect(() => {
+		if (isEdit && taskId) {
+			setState((prevState) => {
+				return {
+					...prevState,
+					name: selectedTask.title,
+					type: selectedTask.type,
+					status: selectedTask.status,
+					startdate: new Date(selectedTask.startdate),
+					enddate: new Date(selectedTask.enddate),
+					priority: selectedTask.priority,
+					description: selectedTask.description,
+					labels: selectedTask.labels,
+					setReminder: selectedTask.setReminder,
+					reminderDate: selectedTask.reminderDate,
+					assignee: selectedTask.assignee,
+				}
+			})
+		}
+	}, [isEdit, taskId])
 
 	const [open, setOpen] = useState(false)
 
@@ -80,7 +104,11 @@ export default function Container(props) {
 			},
 			projectId: projectId,
 		}
-		dispatch(createTask(data, callback))
+		if (!isEdit) {
+			dispatch(createTask(data, callback))
+		} else {
+			dispatch(editTask({ ...data, taskId }, callback))
+		}
 	}
 
 	return (
@@ -92,6 +120,7 @@ export default function Container(props) {
 			open={open}
 			handleClickOpen={handleClickOpen}
 			handleClose={handleClose}
+			isEdit={isEdit}
 		/>
 	)
 }

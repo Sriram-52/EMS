@@ -7,6 +7,7 @@ const initialState = {
 	review: { loading: true, data: {}, error: null },
 	overDue: { loading: true, data: {}, error: null },
 	closed: { loading: true, data: {}, error: null },
+	selectedTask: { loading: true, data: {}, error: null },
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -186,6 +187,36 @@ export default (state = initialState, { type, payload }) => {
 				...state,
 				closed: {
 					...state.closed,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.LOAD_SELECTED_TASK_REQ:
+			return {
+				...state,
+				selectedTask: {
+					...state.selectedTask,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.LOAD_SELECTED_TASK_SUCCESS:
+			return {
+				...state,
+				selectedTask: {
+					...state.selectedTask,
+					loading: false,
+					data: payload,
+				},
+			}
+
+		case ACTIONS.LOAD_SELECTED_TASK_FAILURE:
+			return {
+				...state,
+				selectedTask: {
+					...state.selectedTask,
 					loading: false,
 					error: payload,
 				},
