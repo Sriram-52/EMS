@@ -3,6 +3,7 @@ import ACTIONS from '../actions'
 const initialState = {
 	createTask: { loading: false, data: {}, error: null },
 	updateTask: { loading: false, data: {}, error: null },
+	timeline: { loading: true, data: {}, error: null },
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -62,6 +63,36 @@ export default (state = initialState, { type, payload }) => {
 				...state,
 				updateTask: {
 					...state.updateTask,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.LOAD_TASK_TIMELINE_REQ:
+			return {
+				...state,
+				timeline: {
+					...state.timeline,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.LOAD_TASK_TIMELINE_SUCCESS:
+			return {
+				...state,
+				timeline: {
+					...state.timeline,
+					loading: false,
+					data: payload,
+				},
+			}
+
+		case ACTIONS.LOAD_TASK_TIMELINE_FAILURE:
+			return {
+				...state,
+				timeline: {
+					...state.timeline,
 					loading: false,
 					error: payload,
 				},
