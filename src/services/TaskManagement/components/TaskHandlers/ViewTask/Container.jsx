@@ -22,7 +22,7 @@ export default function Container(props) {
 
 	useEffect(() => {
 		dispatch(loadSelectedTask(projectId, taskId))
-		if (!selectedProject.data) {
+		if (Object.keys(selectedProject.data).length === 0) {
 			dispatch(loadSelectedProject(projectId))
 		}
 	}, [projectId, taskId])
