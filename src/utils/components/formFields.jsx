@@ -343,7 +343,7 @@ export const FileInput = ({
 	)
 }
 
-const CheckBoxInput = ({
+export const CheckBoxInput = ({
 	label,
 	name,
 	handleChange,
@@ -357,7 +357,7 @@ const CheckBoxInput = ({
 					checked={value}
 					required={required}
 					onChange={(e) =>
-						handleChange({ target: { value: e.target.checked } })
+						handleChange({ target: { value: e.target.checked, name } })
 					}
 					name='checkedA'
 				/>

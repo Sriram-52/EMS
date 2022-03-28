@@ -7,6 +7,7 @@ import HomePage from './services/Dashboard/components/Home'
 
 // taskManagement
 import ProjectListPage from './services/TaskManagement/components/ProjectList/Index'
+import TaskListPage from './services/TaskManagement/components/TaskList/Index'
 
 // employeeManagement
 import EmployeeListPage from './services/EmployeeManagement/components/EmployeeList/Index'
@@ -70,6 +71,11 @@ export const protectedRoutes = [
 	{
 		path: '/console/projects',
 		component: ProjectListPage,
+		moduleName: 'task-management',
+	},
+	{
+		path: '/console/projects/:projectId/tasks',
+		component: TaskListPage,
 		moduleName: 'task-management',
 	},
 	{
