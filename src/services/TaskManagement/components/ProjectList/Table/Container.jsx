@@ -6,7 +6,7 @@ import {
 	loadOverDueProjects,
 	loadClosedProjects,
 	loadInProgressProjects,
-} from '../../../middleware/ProjectHandlers'
+} from '../../../middleware/ProjectHandlers/projectList'
 
 export default function Container(props) {
 	const { condition } = props

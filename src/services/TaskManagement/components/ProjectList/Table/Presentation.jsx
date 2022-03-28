@@ -8,7 +8,7 @@ export default function Presentation(props) {
 	const { tabPair, condition } = props
 
 	const { loading, data } = useSelector(
-		(appState) => appState.task.projects[tabPair[condition]]
+		(appState) => appState.task.projectList[tabPair[condition]]
 	)
 
 	const columns = [
@@ -16,7 +16,10 @@ export default function Presentation(props) {
 			title: 'Project name',
 			field: 'clientName',
 			render: (row) => (
-				<Link style={{ color: 'blue' }} to={'/projects/' + row.id}>
+				<Link
+					style={{ color: 'blue' }}
+					to={`/console/projects/${row.id}/tasks`}
+				>
 					{row.clientName}
 				</Link>
 			),
@@ -39,15 +42,15 @@ export default function Presentation(props) {
 		},
 	]
 
-	const statusList = ['open', 'closed']
+	const statusList = ['Open', 'Closed']
 
 	const rows = Object.values(data).map((item) => {
 		return {
-			clientname: item.title,
+			clientName: item.title,
 			id: item.id,
 			cid: item.cid,
-			startDate: validate.dateFormatter(item.startDate),
-			endDate: validate.dateFormatter(item.endDate),
+			startDate: validate.dateFormatter(item.startdate),
+			endDate: validate.dateFormatter(item.enddate),
 			status: statusList.indexOf(item.status),
 		}
 	})
