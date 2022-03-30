@@ -10,6 +10,10 @@ export default function Container() {
 	const { loading, data, error } = useSelector(
 		(appState) => appState.employee.default.modules
 	)
+
+	const companyDetails = useSelector(
+		(appState) => appState.console.companyDetails
+	)
 	const user = useSelector((appState) => appState.auth.signIn.data.user)
 	const metaInfo = useSelector((appState) => appState.default.metaInfo)
 	const dispatch = useDispatch()
@@ -21,7 +25,12 @@ export default function Container() {
 
 	const loaderCondition = () => {
 		let flag = false
-		if (loading || error || Object.keys(metaInfo.data).length === 0) {
+		if (
+			loading ||
+			error ||
+			Object.keys(metaInfo.data).length === 0 ||
+			companyDetails.loading
+		) {
 			flag = true
 		}
 		return flag
@@ -38,6 +47,7 @@ export default function Container() {
 			accessModules={data}
 			user={user}
 			handleSignOut={handleSignOut}
+			companyDetails={companyDetails.data}
 		/>
 	)
 }

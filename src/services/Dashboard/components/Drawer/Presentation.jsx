@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function Presentation(props) {
-	const { accessModules, user, handleSignOut } = props
+	const { accessModules, user, handleSignOut, companyDetails } = props
 	const classes = useStyles()
 	const theme = useTheme()
 	const [open, setOpen] = React.useState(false)
@@ -146,6 +146,7 @@ export default function Presentation(props) {
 					>
 						<MenuIcon />
 					</IconButton>
+					<img src={companyDetails.images.companyLogo} alt='' height='60' />
 					<div className={classes.align}>
 						<IconButton
 							aria-label='account of current user'
@@ -167,6 +168,12 @@ export default function Presentation(props) {
 							open={openIcon}
 							onClose={handleClose}
 						>
+							<Link
+								to={`/console`}
+								style={{ color: 'black', textDecoration: 'none' }}
+							>
+								<MenuItem onClick={handleClose}>Console</MenuItem>
+							</Link>
 							<Link
 								to={`/console/profile`}
 								style={{ color: 'black', textDecoration: 'none' }}
