@@ -150,7 +150,7 @@ export default function ArticleContent(props) {
 					{HTMLReactParser(data.content || '')}
 				</Typography>
 			</div>
-			{!isHistory ? (
+			{!isHistory && data.isExist ? (
 				<ActionButtons
 					data={data}
 					auth={auth}

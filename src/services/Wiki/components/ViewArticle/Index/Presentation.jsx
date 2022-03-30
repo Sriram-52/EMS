@@ -45,7 +45,11 @@ export default function Presentation(props) {
 	}, [isHistory, JSON.stringify(selectedArticle.data)])
 
 	useEffect(() => {
-		if (isHistory && selectedHistory.data.eventDetails.after) {
+		if (
+			isHistory &&
+			selectedHistory.data.eventDetails &&
+			selectedHistory.data.eventDetails.after
+		) {
 			setData(selectedHistory.data.eventDetails.after)
 		}
 	}, [isHistory, JSON.stringify(selectedHistory.data)])
