@@ -5,6 +5,7 @@ const initialState = {
 	active: { loading: true, data: {}, error: null },
 	inActive: { loading: true, data: {}, error: null },
 	suspended: { loading: true, data: {}, error: null },
+	selectedEmployee: { loading: true, data: {}, error: null },
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -124,6 +125,39 @@ export default (state = initialState, { type, payload }) => {
 				...state,
 				suspended: {
 					...state.suspended,
+					loading: false,
+					error: payload,
+				},
+			}
+
+		case ACTIONS.LOAD_SELECTED_EMPLOYEE_REQ:
+			return {
+				...state,
+				selectedEmployee: {
+					...state.selectedEmployee,
+					loading: true,
+					error: null,
+				},
+			}
+
+		case ACTIONS.LOAD_SELECTED_EMPLOYEE_SUCCESS:
+			return {
+				...state,
+				selectedEmployee: {
+					...state.selectedEmployee,
+					loading: false,
+					data: {
+						...state.selectedEmployee.data,
+						...payload,
+					},
+				},
+			}
+
+		case ACTIONS.LOAD_SELECTED_EMPLOYEE_FAILURE:
+			return {
+				...state,
+				selectedEmployee: {
+					...state.selectedEmployee,
 					loading: false,
 					error: payload,
 				},

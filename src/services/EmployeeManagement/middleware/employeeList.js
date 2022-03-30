@@ -102,3 +102,26 @@ export const loadSuspendedEmployees = () => (dispatch) => {
 			}
 		)
 }
+
+export const loadSelectedEmployee = (employeeId) => (dispatch) => {
+	dispatch(dispatcher(ACTIONS.LOAD_SELECTED_EMPLOYEE_REQ))
+	const unSubscribe = firebase
+		.firestore()
+		.doc(`EMPLOYEES/${employeeId}`)
+		.onSnapshot(
+			(doc) => {
+				if (!doc.exists) throw new Error('no-doc')
+				return dispatch(
+					dispatcher(ACTIONS.LOAD_SELECTED_EMPLOYEE_SUCCESS, {
+						[employeeId]: doc.data(),
+					})
+				)
+			},
+			(err) => {
+				const errMsg = err.message || 'Failed to load profile'
+				return dispatch(
+					dispatcher(ACTIONS.LOAD_SELECTED_EMPLOYEE_FAILURE, errMsg)
+				)
+			}
+		)
+}
