@@ -22,6 +22,14 @@ app.use('/projects', require('./services/TaskManagement/Project/controller'))
 app.use('/projects', require('./services/TaskManagement/Task/controller'))
 app.use('/projects', require('./services/TaskManagement/Labels/controller'))
 app.use('/wiki', require('./services/WikiMangment/controller'))
+app.use(
+	'/console/companydetails',
+	require('./services/Console/CompanyDetails/controller')
+)
+app.use(
+	'/console/modulelevelaccess',
+	require('./services/Console/ModuleLevelAccess/controller')
+)
 
 exports.api = functions.https.onRequest(app)
 
