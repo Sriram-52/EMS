@@ -5,12 +5,20 @@ import EmployeeRegistration from './services/EmployeeManagement/components/Regis
 /// protected
 import HomePage from './services/Dashboard/components/Home'
 
+// console
+import ConsoleCustomisationPage from './services/Console/components/Index'
+import ModuleLevelAccessPage from './services/Console/components/ModuleLevelAccess'
+import CompanyDetailsPage from './services/Console/components/CompanyDetails/Index'
+
 // taskManagement
 import ProjectListPage from './services/TaskManagement/components/ProjectList/Index'
 import TaskListPage from './services/TaskManagement/components/TaskList/Index'
+import ViewTaskPage from './services/TaskManagement/components/TaskHandlers/ViewTask'
 
 // employeeManagement
 import EmployeeListPage from './services/EmployeeManagement/components/EmployeeList/Index'
+import EmployeeProfilePage from './services/EmployeeManagement/pages/EmployeeProfilePage'
+import UserProfilePage from './services/EmployeeManagement/pages/UserProfilePage'
 
 // wikiManagement
 import WikiHomePage from './services/Wiki/components/Index'
@@ -21,7 +29,6 @@ import WikiSettingsPage from './services/Wiki/components/WikiSettings'
 import ViewArticlePage from './services/Wiki/pages/ViewArticlePage'
 import ArticleHistoryPage from './services/Wiki/pages/ArticleHistoryPage'
 import ViewArticleHistoryPage from './services/Wiki/pages/ViewArticleHistoryPage'
-import ViewTaskPage from './services/TaskManagement/components/TaskHandlers/ViewTask'
 
 export const unProtectedRoutes = [
 	{ path: '/signIn', component: SignIn },
@@ -88,6 +95,31 @@ export const protectedRoutes = [
 		path: '/console/employees',
 		component: EmployeeListPage,
 		moduleName: 'employees-manager',
+	},
+	{
+		path: '/console/profile',
+		component: UserProfilePage,
+		moduleName: 'common-module',
+	},
+	{
+		path: '/console/employees/:employeeId',
+		component: EmployeeProfilePage,
+		moduleName: 'employees-manager',
+	},
+	{
+		path: '/console/moduleaccess',
+		component: ModuleLevelAccessPage,
+		moduleName: 'console-customization',
+	},
+	{
+		path: '/console/companydetails',
+		component: CompanyDetailsPage,
+		moduleName: 'console-customization',
+	},
+	{
+		path: '/console',
+		component: ConsoleCustomisationPage,
+		moduleName: 'console-customization',
 	},
 	{
 		path: '/',

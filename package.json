@@ -32,6 +32,7 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.4.1",
     "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^2.1.2",
     "suneditor-react": "^2.14.2",
     "vite-plugin-rewrite-all": "^0.1.2"
   },
