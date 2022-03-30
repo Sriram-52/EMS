@@ -17,10 +17,10 @@ import { Delete as DeleteIcon, Edit as EditIcon } from '@material-ui/icons'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import FacebookProgress from '../../../../utils/components/customProgress'
+import FacebookProgress from '../../../../../utils/components/customProgress'
 import SunEditor from 'suneditor-react'
 import parse from 'html-react-parser'
-import MetaInfo from '../../../../utils/functions/metaInfo'
+import MetaInfo from '../../../../../utils/functions/metaInfo'
 
 const useStyles = makeStyles((theme) => ({
 	root: {

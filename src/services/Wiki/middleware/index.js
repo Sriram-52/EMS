@@ -161,6 +161,7 @@ export const updateArticle =
 			body: payload,
 		})
 			.then((res) => {
+				callback()
 				return dispatch(dispatcher(ACTIONS.UPDATE_ARTICLE_SUCCESS, res))
 			})
 			.catch((err) => {
@@ -380,29 +381,32 @@ export const getArticles = (categoryId) => (dispatch) => {
 
 export const getArticle = (articleId) => (dispatch) => {
 	dispatch(dispatcher(ACTIONS.GET_SELECTED_ARTICLE_REQ))
-	return firebase
+	const unSubscribe = firebase
 		.firestore()
 		.doc(`WIKI/articles/ARTICLE_DOCS/${articleId}`)
-		.get()
-		.then((doc) => {
-			if (!doc.exists) throw new Error('no-doc')
-			return dispatch(
-				dispatcher(ACTIONS.GET_SELECTED_ARTICLE_SUCCESS, doc.data())
-			)
-		})
-		.catch((err) => {
-			console.error(err)
-			if (err.toString().match('no-doc')) {
+		.onSnapshot(
+			(doc) => {
+				if (!doc.exists) throw new Error('no-doc')
 				return dispatch(
-					dispatcher(
-						ACTIONS.GET_SELECTED_ARTICLE_FAILURE,
-						'No document found with given id'
+					dispatcher(ACTIONS.GET_SELECTED_ARTICLE_SUCCESS, doc.data())
+				)
+			},
+			(err) => {
+				console.error(err)
+				if (err.toString().match('no-doc')) {
+					return dispatch(
+						dispatcher(
+							ACTIONS.GET_SELECTED_ARTICLE_FAILURE,
+							'No document found with given id'
+						)
 					)
+				}
+				const errMsg = err.message || 'Failed to get categories'
+				return dispatch(
+					dispatcher(ACTIONS.GET_SELECTED_ARTICLE_FAILURE, errMsg)
 				)
 			}
-			const errMsg = err.message || 'Failed to get categories'
-			return dispatch(dispatcher(ACTIONS.GET_SELECTED_ARTICLE_FAILURE, errMsg))
-		})
+		)
 }
 
 export const getRecentlyAddedArticles = () => (dispatch) => {

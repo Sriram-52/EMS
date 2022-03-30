@@ -5,9 +5,9 @@ import {
 	updateComment,
 	deleteComment,
 	getComments,
-} from '../../middleware'
+} from '../../../middleware'
 import { useDispatch, useSelector } from 'react-redux'
-import Loader from '../../../../utils/components/loader'
+import Loader from '../../../../../utils/components/loader'
 
 export default function Container(props) {
 	const { articleId } = props

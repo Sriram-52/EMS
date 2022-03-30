@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import {
 	deleteArticle,
 	restoreArticle,
@@ -8,16 +8,14 @@ import {
 	getArticle,
 	getCategoriesMetaInfo,
 	getHistoryById,
-} from '../../middleware'
+} from '../../../middleware'
 import Presentation from './Presentation'
 import { useSelector, useDispatch } from 'react-redux'
-import Loader from '../../../../utils/components/loader'
+import Loader from '../../../../../utils/components/loader'
 import { useHistory } from 'react-router-dom'
 
 export default function Container(props) {
 	const { articleId, isHistory, historyId } = props
-
-	const [data, setData] = useState({})
 
 	const dispatch = useDispatch()
 	const history = useHistory()
@@ -25,18 +23,6 @@ export default function Container(props) {
 	const categoriesMeta = useSelector(
 		(appState) => appState.wiki.categories.meta
 	)
-
-	const selectedArticle = useSelector(
-		(appState) => appState.wiki.articles.selected
-	)
-
-	const selectedHistory = useSelector(
-		(appState) => appState.wiki.history.selected
-	)
-
-	const modules = useSelector((appState) => appState.employee.default.modules)
-
-	const user = useSelector((appState) => appState.auth.signIn.data.user)
 
 	useEffect(() => {
 		if (Object.keys(categoriesMeta.data).length === 0) {
@@ -52,38 +38,8 @@ export default function Container(props) {
 		}
 	}, [articleId, historyId, isHistory])
 
-	useEffect(() => {
-		if (!isHistory) {
-			setData(selectedArticle.data)
-		}
-	}, [JSON.stringify(selectedArticle.data)])
-
-	useEffect(() => {
-		if (isHistory) {
-			setData(selectedHistory.data.eventDetails.after)
-		}
-	}, [JSON.stringify(selectedHistory.data)])
-
 	const loadingCondition = () => {
-		if (!isHistory) {
-			if (
-				categoriesMeta.loading ||
-				selectedArticle.loading ||
-				selectedArticle.error ||
-				Object.keys(data).length === 0
-			) {
-				return true
-			}
-		} else {
-			if (
-				categoriesMeta.loading ||
-				selectedHistory.loading ||
-				selectedHistory.error ||
-				Object.keys(data).length === 0
-			) {
-				return true
-			}
-		}
+		return categoriesMeta.loading
 	}
 
 	const callback = () => {
@@ -114,7 +70,6 @@ export default function Container(props) {
 
 	return (
 		<Presentation
-			data={data}
 			categoryMetaInfo={categoriesMeta.data}
 			isHistory={isHistory}
 			articleId={articleId}
@@ -123,8 +78,6 @@ export default function Container(props) {
 			onRevertArticle={onRevertArticle}
 			onFollowOrUnfollow={onFollowOrUnfollow}
 			onVote={onVote}
-			access_modules={modules.data}
-			auth={user}
 		/>
 	)
 }

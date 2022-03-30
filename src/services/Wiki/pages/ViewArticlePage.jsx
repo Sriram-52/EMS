@@ -1,5 +1,5 @@
 import React from 'react'
-import ViewArticle from '../components/ViewArticle'
+import ViewArticle from '../components/ViewArticle/Index'
 
 export default function ViewArticlePage(props) {
 	const {
