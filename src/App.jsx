@@ -5,6 +5,7 @@ import { tokenListner } from './services/Authentication/middleware'
 import CustomBackDrop from './utils/components/customBackdrop'
 import Drawer from './services/Dashboard/components/Drawer'
 import { unProtectedRoutes } from './routes'
+import { loadCompanyDetails } from './services/Console/middleware'
 
 function App() {
 	const state = useSelector((appState) => appState.auth.signIn)
@@ -12,6 +13,7 @@ function App() {
 
 	useEffect(() => {
 		tokenListner(dispatch)
+		dispatch(loadCompanyDetails())
 	}, [])
 
 	if (state.loading) return <CustomBackDrop open={true} />

@@ -296,10 +296,11 @@ export const FileInput = ({
 	const handleFile = (e) => {
 		const file = e.target.files[0]
 		setSpin(true)
+		const f_name = fileName || file.name
 		return uploadToStorage(
 			file,
 			filePath,
-			fileName + '.' + file.name.split('.')[1],
+			f_name + '.' + file.name.split('.').pop(),
 			'file'
 		)
 			.then((url) => {
